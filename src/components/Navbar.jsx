@@ -1,50 +1,54 @@
 // components/Navbar.jsx
-import gsap from 'gsap'
-import { ChevronDown, Download, Menu } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'; // Ensure ScrollTrigger is registered
+import { ChevronDown, Download, Menu, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-const navItems = ['Corporate Overview', 'Statutory Reports', 'Financial Statements', 'Notice']
+// Register ScrollTrigger if in a browser environment
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
+const navItems = ['Corporate Overview', 'Statutory Reports', 'Financial Statements', 'Notice'];
 
 export default function Navbar() {
-    const navRef = useRef(null)
-    const mobileMenuRef = useRef(null)
-    const [open, setOpen] = useState(false)
+    const navRef = useRef(null);
+    const progressBarRef = useRef(null);
+    const [open, setOpen] = useState(false);
 
-    // Initial animation
     useEffect(() => {
+        // 1. Initial entrance animation
         gsap.fromTo(
-            navRef.current.children,
-            { y: -30, opacity: 0 },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.6,
-                stagger: 0.1,
-                ease: 'power3.out',
-            },
-        )
-    }, [])
+            ".nav-content",
+            { y: -20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power4.out' }
+        );
 
-    // Mobile menu animation
-    useEffect(() => {
-        if (open) {
-            gsap.fromTo(
-                mobileMenuRef.current,
-                { y: -20, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-            )
-        }
-    }, [open])
+        // 2. Scroll Progress Bar Animation
+        gsap.to(progressBarRef.current, {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.3, // Smoother follow
+            }
+        });
+    }, []);
 
     return (
-        <header className="w-full bg-white border-b absolute top-0 z-100">
-            <nav
-                ref={navRef}
-                className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4"
-            >
+        <header className="fixed top-0 left-0 w-full bg-[#0B1220]/90 backdrop-blur-md border-b border-white/10 z-[100]">
+            {/* Scroll Progress Bar */}
+            <div
+                ref={progressBarRef}
+                className="absolute bottom-0 left-0 h-[3px] w-full bg-orange-500 origin-left scale-x-0 z-50"
+            />
+
+            <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
                 {/* Logo */}
-                <div className="flex items-center gap-2">
-                    <img src="/gulf-logo.svg" alt="Gulf Logo" className="h-10 w-auto" />
+                <div className="nav-content flex items-center gap-2">
+                    <img src="/gulf-logo.svg" alt="Logo" className="h-8 md:h-10 w-auto brightness-110" />
                 </div>
 
                 {/* Desktop Menu */}
@@ -52,45 +56,52 @@ export default function Navbar() {
                     {navItems.map((item) => (
                         <li
                             key={item}
-                            className="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900 transition "
+                            className="nav-content flex items-center gap-1 text-xs uppercase tracking-widest font-bold text-gray-300 cursor-pointer hover:text-orange-500 transition-colors duration-300"
                         >
                             {item}
-                            <ChevronDown size={16} className="text-gray-500" />
+                            <ChevronDown size={14} className="opacity-50" />
                         </li>
                     ))}
                 </ul>
 
-                {/* Report Button */}
-                <div className="hidden md:block">
-                    <button className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
-                        <Download size={16} />
-                        Report
+                {/* Action Button */}
+                <div className="nav-content hidden md:block">
+                    <button className="flex items-center gap-2 border border-orange-500/50 px-5 py-2 rounded-full text-[10px] uppercase tracking-tighter font-black text-white hover:bg-orange-500 hover:text-white transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+                        <Download size={14} className="text-orange-500 hover:text-white group-hover:text-white" />
+                        Download Report
                     </button>
                 </div>
 
-                {/* Mobile Menu Icon */}
-                <button onClick={() => setOpen(!open)} className="md:hidden size-8 flex items-center justify-center bg-blue-800 rounded-full text-white">
-                    <Menu width={14} />
+                {/* Mobile Menu Toggle */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="nav-content md:hidden p-2 text-white hover:text-orange-500 transition-colors"
+                >
+                    {open ? <X size={24} /> : <Menu size={24} />}
                 </button>
             </nav>
 
-            {/* Mobile Menu */}
-            {open && (
-                <div
-                    ref={mobileMenuRef}
-                    className="md:hidden bg-white border-t px-6 py-4 space-y-4"
-                >
+            {/* Mobile Menu Overlay */}
+            <div
+                className={`absolute top-full left-0 w-full bg-[#0B1220] border-b border-white/10 transition-all duration-500 ease-in-out overflow-hidden ${
+                    open ? 'max-h-screen opacity-100 py-8' : 'max-h-0 opacity-0 py-0'
+                }`}
+            >
+                <div className="flex flex-col items-center gap-6 px-6">
                     {navItems.map((item) => (
-                        <div key={item} className="text-sm font-medium text-gray-700">
+                        <div
+                            key={item}
+                            className="text-sm uppercase tracking-[0.2em] font-bold text-gray-300 hover:text-orange-500"
+                            onClick={() => setOpen(false)}
+                        >
                             {item}
                         </div>
                     ))}
-
-                    <button className="w-full border px-4 py-2 rounded-full text-sm font-medium">
-                        Report
+                    <button className="w-full max-w-xs bg-orange-500 text-white py-3 rounded-full text-xs font-bold uppercase tracking-widest">
+                        Download Report
                     </button>
                 </div>
-            )}
+            </div>
         </header>
-    )
+    );
 }

@@ -1,10 +1,12 @@
 import About from './components/About'
 import Anim from './components/Anim'
 import BoardOfDirectors from './components/BoardOfDirectors'
+import FinancialDashboard from './components/FinancialDashboard'
 import Footer from './components/Footer'
 import GlobalPartnership from './components/GlobalPartnership'
 import Hero from './components/Hero'
 import HeroMomentum from './components/HeroMomentum'
+import Leadership from './components/Leadership'
 import Navbar from './components/Navbar'
 
 const App = () => {
@@ -69,7 +71,9 @@ const directors = [
                 <Anim />
                 <HeroMomentum />
                 <GlobalPartnership />
+                <Leadership />
                 <BoardOfDirectors data={directors} />
+                <FinancialDashboard />
                 <Footer />
 
             </div>
