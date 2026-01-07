@@ -97,7 +97,7 @@ export default function Hero() {
 
             {/* Main Content Card */}
             <div className="relative z-20 w-full max-w-4xl mx-auto px-4 text-center">
-                <div className="bg-[#0B1220]/40 backdrop-blur-xl border border-white/10 p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] shadow-2xl">
+                <div className="bg-[#0B1220]/40 backdrop-blur-xl border border-white/10 p-8 md:p-16 rounded-4xl md:rounded-[3rem] shadow-2xl">
                     <div ref={logoRef} className="inline-block mb-6 md:mb-8">
                         <img
                             src="/spark-t.webp"
@@ -113,17 +113,17 @@ export default function Hero() {
 
                         <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight md:leading-[0.85]">
                             Charging <br className="hidden md:block" />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">
                                 Ahead.
                             </span>
                         </h1>
 
                         <div className="pt-6 md:pt-10 flex items-center justify-center gap-4 md:gap-8">
-                            <span className="h-[1px] flex-1 max-w-[40px] md:max-w-[80px] bg-white/20" />
+                            <span className="h-px flex-1 max-w-10 md:max-w-20 bg-white/20" />
                             <span className="text-[9px] md:text-[11px] uppercase tracking-[0.25em] text-gray-400 font-semibold whitespace-nowrap">
                                 Innovation in Motion • 2026
                             </span>
-                            <span className="h-[1px] flex-1 max-w-[40px] md:max-w-[80px] bg-white/20" />
+                            <span className="h-px flex-1 max-w-10 md:max-w-20 bg-white/20" />
                         </div>
                     </div>
                 </div>

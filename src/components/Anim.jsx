@@ -71,7 +71,7 @@ const Anim = () => {
     <div ref={containerRef} className="bg-black relative min-h-screen overflow-hidden">
       {/* Background stays the same */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900" />
+        <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-black to-gray-900" />
         <div className="absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)" }} />
       </div>
 
@@ -97,7 +97,7 @@ const Anim = () => {
                   style={{ top: item.top, left: item.left, transform: "translateX(-50%)" }}
                 >
                   <div className="relative p-4 w-72 rounded-lg backdrop-blur-sm bg-black/90 text-white border border-orange-500/40">
-                    <div className="bg-gradient-to-r from-orange-500 to-orange-400 text-black px-3 py-1 text-sm font-bold rounded-lg mb-2 inline-block">
+                    <div className="bg-linear-to-r from-orange-500 to-orange-400 text-black px-3 py-1 text-sm font-bold rounded-lg mb-2 inline-block">
                       {item.title}
                     </div>
                     <p className="text-sm text-gray-100">{item.text}</p>

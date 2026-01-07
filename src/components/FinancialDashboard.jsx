@@ -173,7 +173,7 @@ const FinancialDashboard = () => {
                                         Figures in ₹ Crores
                                     </p>
 
-                                    <div className="relative w-full aspect-[4/3] flex items-center justify-center overflow-hidden rounded-xl">
+                                    <div className="relative w-full aspect-4/3 flex items-center justify-center overflow-hidden rounded-xl">
                                         <img
                                             src={item.img}
                                             alt={item.title}

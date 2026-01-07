@@ -1,107 +1,161 @@
-// components/Navbar.jsx
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'; // Ensure ScrollTrigger is registered
-import { ChevronDown, Download, Menu, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import navData from './navData.js'
 
-// Register ScrollTrigger if in a browser environment
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-}
-
-const navItems = ['Corporate Overview', 'Statutory Reports', 'Financial Statements', 'Notice'];
-
-export default function Navbar() {
-    const navRef = useRef(null);
-    const progressBarRef = useRef(null);
-    const [open, setOpen] = useState(false);
+export default function FuturisticNavbar() {
+    const [isOpen, setIsOpen] = useState(false)
+    const [activeDropdown, setActiveDropdown] = useState(null)
+    const [scrolled, setScrolled] = useState(false)
 
     useEffect(() => {
-        // 1. Initial entrance animation
-        gsap.fromTo(
-            ".nav-content",
-            { y: -20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power4.out' }
-        );
+        const handleScroll = () => setScrolled(window.scrollY > 10)
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
 
-        // 2. Scroll Progress Bar Animation
-        gsap.to(progressBarRef.current, {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.3, // Smoother follow
-            }
-        });
-    }, []);
+    const formatSlug = (text) => text.toLowerCase().replace(/ /g, '-').replace(/[&]/g, 'and')
 
     return (
-        <header className="fixed top-0 left-0 w-full bg-[#0B1220]/90 backdrop-blur-md border-b border-white/10 z-[100]">
-            {/* Scroll Progress Bar */}
-            <div
-                ref={progressBarRef}
-                className="absolute bottom-0 left-0 h-[3px] w-full bg-orange-500 origin-left scale-x-0 z-50"
-            />
-
-            <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        <header
+            className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+                scrolled
+                    ? 'bg-[#0B1220]/95 backdrop-blur-md border-b border-cyan-500/20'
+                    : 'bg-transparent'
+            }`}
+        >
+            <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
                 {/* Logo */}
-                <div className="nav-content flex items-center gap-2">
-                    <img src="/gulf-logo.svg" alt="Logo" className="h-8 md:h-10 w-auto brightness-110" />
-                </div>
+                <Link to="/" className="flex-shrink-0">
+                    <img src="/gulf-logo.svg" alt="Logo" className="h-9 w-auto brightness-110" />
+                </Link>
 
-                {/* Desktop Menu */}
-                <ul className="hidden md:flex items-center gap-8">
-                    {navItems.map((item) => (
+                {/* Desktop Navigation */}
+                <ul className="hidden lg:flex items-center gap-1 h-full">
+                    {navData.map((category, idx) => (
                         <li
-                            key={item}
-                            className="nav-content flex items-center gap-1 text-xs uppercase tracking-widest font-bold text-gray-300 cursor-pointer hover:text-orange-500 transition-colors duration-300"
+                            key={idx}
+                            className="relative h-full flex items-center"
+                            onMouseEnter={() => setActiveDropdown(idx)}
+                            onMouseLeave={() => setActiveDropdown(null)}
                         >
-                            {item}
-                            <ChevronDown size={14} className="opacity-50" />
+                            <button
+                                className={`flex items-center gap-1 px-4 py-2 text-[10px] tracking-[0.15em] font-bold uppercase transition-colors ${
+                                    activeDropdown === idx
+                                        ? 'text-cyan-400'
+                                        : 'text-gray-300 hover:text-white'
+                                }`}
+                            >
+                                {category.title}
+                                <ChevronDown
+                                    size={14}
+                                    className={`transition-transform duration-300 ${
+                                        activeDropdown === idx ? 'rotate-180' : ''
+                                    }`}
+                                />
+                            </button>
+
+                            {/* COMPACT GRID DROPDOWN */}
+                            <div
+                                className={`absolute top-[80%] left-1/2 -translate-x-1/2 pt-4 transition-all duration-300 ${
+                                    activeDropdown === idx
+                                        ? 'opacity-100 visible translate-y-0'
+                                        : 'opacity-0 invisible -translate-y-2'
+                                }`}
+                            >
+                                <div className="w-[850px] bg-[#0F172A] border border-white/10 rounded-xl shadow-2xl overflow-hidden flex">
+                                    {/* Sidebar Accent */}
+                                    <div className="w-1/3 p-6 bg-cyan-500/5 border-r border-white/5 flex flex-col justify-between">
+                                        <div>
+                                            <div className="text-cyan-500 font-mono text-[9px] mb-2 tracking-widest">
+                                                SECTION_0{idx + 1}
+                                            </div>
+                                            <h3 className="text-white text-xl font-black uppercase leading-tight">
+                                                {category.title}
+                                            </h3>
+                                        </div>
+                                        <div className="h-1 w-12 bg-cyan-500/50" />
+                                    </div>
+
+                                    {/* Scroll-free Grid */}
+                                    <div className="w-2/3 p-6 grid grid-cols-2 gap-2">
+                                        {category.items.map((item, i) => (
+                                            <Link
+                                                key={i}
+                                                to={`/${formatSlug(category.title)}/${formatSlug(
+                                                    item,
+                                                )}`}
+                                                onClick={() => setActiveDropdown(null)}
+                                                className="group flex items-center justify-between p-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
+                                            >
+                                                <span
+                                                    className={`text-[13px] font-medium ${
+                                                        item === 'unlock2.0'
+                                                            ? 'text-orange-400'
+                                                            : 'text-gray-400 group-hover:text-white'
+                                                    }`}
+                                                >
+                                                    {item}
+                                                </span>
+                                                <ArrowUpRight
+                                                    size={14}
+                                                    className="text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     ))}
                 </ul>
 
-                {/* Action Button */}
-                <div className="nav-content hidden md:block">
-                    <button className="flex items-center gap-2 border border-orange-500/50 px-5 py-2 rounded-full text-[10px] uppercase tracking-tighter font-black text-white hover:bg-orange-500 hover:text-white transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
-                        <Download size={14} className="text-orange-500 hover:text-white group-hover:text-white" />
+                {/* Right Action */}
+                <div className="hidden lg:block">
+                    <button className="px-6 py-2 bg-white text-[#0B1220] text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-cyan-400 transition-all transform hover:scale-105 active:scale-95">
                         Download Report
                     </button>
                 </div>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    onClick={() => setOpen(!open)}
-                    className="nav-content md:hidden p-2 text-white hover:text-orange-500 transition-colors"
-                >
-                    {open ? <X size={24} /> : <Menu size={24} />}
+                {/* Mobile Menu Button */}
+                <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-white">
+                    {isOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
             </nav>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Menu - Grid Layout */}
             <div
-                className={`absolute top-full left-0 w-full bg-[#0B1220] border-b border-white/10 transition-all duration-500 ease-in-out overflow-hidden ${
-                    open ? 'max-h-screen opacity-100 py-8' : 'max-h-0 opacity-0 py-0'
+                className={`lg:hidden fixed inset-0 top-20 bg-[#0B1220] z-50 transition-transform duration-500 ${
+                    isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
-                <div className="flex flex-col items-center gap-6 px-6">
-                    {navItems.map((item) => (
-                        <div
-                            key={item}
-                            className="text-sm uppercase tracking-[0.2em] font-bold text-gray-300 hover:text-orange-500"
-                            onClick={() => setOpen(false)}
-                        >
-                            {item}
+                <div className="p-6 h-full overflow-y-auto pb-32">
+                    {navData.map((category, idx) => (
+                        <div key={idx} className="mb-8">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="text-cyan-500 text-[10px] font-bold">
+                                    0{idx + 1}
+                                </span>
+                                <h4 className="text-white text-xs font-black uppercase tracking-widest">
+                                    {category.title}
+                                </h4>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 pl-4">
+                                {category.items.map((item, i) => (
+                                    <Link
+                                        key={i}
+                                        to={`/${formatSlug(category.title)}/${formatSlug(item)}`}
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-gray-400 text-sm py-1 hover:text-cyan-400"
+                                    >
+                                        {item}
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                     ))}
-                    <button className="w-full max-w-xs bg-orange-500 text-white py-3 rounded-full text-xs font-bold uppercase tracking-widest">
-                        Download Report
-                    </button>
                 </div>
             </div>
         </header>
-    );
+    )
 }
